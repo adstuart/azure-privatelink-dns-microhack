@@ -1,66 +1,50 @@
-# **SAP on Azure OpenHack**
+# **Azure Private Link DNS MicroHack**
 
-# Contents
+# Contents //update this last//
 
-[Lab Overview](#lab-overview)
+[Lab Overview and Pre-req](#lab-overview)
 
-[Challenge 1 : Deploying the SAP S/4 HANA landscape](#challenge-1--deploying-the-sap-s4-hana-landscape)
+[Challenge 1 : Connect to Azure SQL](#challenge-1--deploying-the-sap-s4-hana-landscape)
 
-[Challenge 2 : SAP parameter tuning](#challenge-2--sap-parameter-tuning)
+[Challenge 2 : Deploy service endpoints](#challenge-2--sap-parameter-tuning)
 
-[Challenge 3 : SAP HANA Backup using Azure native tools](#challenge-3--sap-hana-backup-using-azure-native-tools)
+[Challenge 3 : Deploy private endpoint for SQL](#challenge-3--sap-hana-backup-using-azure-native-tools)
 
-[Challenge 4 : Securing Fiori access from internet](#challenge-4--securing-fiori-access-from-internet)
+[Challenge 4 : Implement Azure DNS Private Zones integration](#challenge-4--securing-fiori-access-from-internet)
 
-[Challenge 5 : Setup dashboards for the SAP environment](#challenge-5--setup-dashboards-for-the-sap-environment)
+[Challenge 5 : Implement custom DNS integration (Windows DNS on Windows Server 2019)](#challenge-5--setup-dashboards-for-the-sap-environment)
 
-[Challenge 6 : HANA Performance Validation](#challenge-6--hana-performance-validation)
+[Challenge 6 : Implement On-Premises access using conditional forwarding](#challenge-6--hana-performance-validation)
+
+[Challenge 7 : Optional, hard! Implement On-Premises access within using existing Azure hosted custom DNS server](#challenge-6--hana-performance-validation)
 
 [Appendix](#appendix)
 
-# Lab Overview
+# Scenario
 
-Contoso group is UK based consumer electrical retail company. They had started an evaluation of moving to SAP S/4 HANA on Azure a few months ago. As part of the evaluation the IT team had setup an S/4 HANA POC landscape in Azure. Due to business reasons this was put on hold and to save costs they decided to convert these VMs to custom images and save it in Azure Shared image gallery.
+Contoso group is a consumer electrical retail company. The company works within a regulated industry and would like to secure their use of Azure PaaS services. As part of the evaluation the IT team has started to look at using Azure Private Link. Due to technical reasons this was put on hold and they have turned to Microsoft for support.
 
-With leadership changes at Contoso they have now decided to revive the POC and do a complete technical validation of the solution. You have been tasked with reinstating the environment and setup a demo how moving to Azure simplifies end to end management and operations. Key areas which the IT leadership team is looking at are
+## Context
 
-- HA solution which will give them at least 99.95% availability.
-- Azure native solutions for operations like Monitoring, Backup etc.
-- Zero downtime for applying changes/patches.
-- Performance validation of SAP HANA
-- Securing web-based access to SAP from internet using a WAF.
-- Infrastructure as Code for deployment and configuration.
+Different types of customer DNS. Link to Daniels work on accessing DNS landscape within a customer and top 5 questions to ask.
 
+# Pre-requisites
 
+## Overview
 
-# Challenge 1 : Deploying the SAP S/4 HANA landscape
+In order to use the MicroHack time most effectively, the following tasks should be completed prior to starting the session.
 
-### Goal 
+With the above pre-requisites in place, this will allow us to focus on building the differentiated knowledge in PrivateLink that the field requires, rather than spending hours repeating simple tasks such as setting up Virtual Networks and Virtual Machines. After complete these steps, the base lab build looks as follows:
 
+![S4setup image](images/pre.jpg)
 
-The goal of this exercise is to use the already existing image to deploy the SAP environment. Below is the High availability architecture for S/4 HANA which you need to deploy.
+## Task 1 : Deploy Template
 
-
-![S4setup image](images/s4setup.jpg)
-
-
-## Task 1 : Check Shared Gallery for Images
-
-Check that you can access the images for all the different VM types in the Shared Image gallery and note the regions in which they are available. Shared Image Gallery used is **s4hana1809.sles12**
-
-[https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries)
-
-
-
-## Task 2:  Deploy the SAP environment 
-
-Deploy the SAP environment using the Terraform template [https://github.com/karthikvenkat17/sap-cluster-openhack](https://github.com/karthikvenkat17/sap-cluster-openhack). The template builds VMs from custom images in the shared image gallery **s4hana1809.sles12**
+Deploy the  environment using the Terraform template <tbc> . 
 
 The template requires following inputs:
 
-1. **location** - Choose one of the Azure regions where the image is available. (WestCentralUS, EastUS2, CanadaCentral, FranceCentral, WestEurope, NorthEurope)
-2. **rgname** (Optional) - Name of the Resource Group to deploy resources into. This defaults to SAP-Open-Hack.
-3. **sshkeypath** -  Path to your SSH public key file to be used for logging into Linux VMs. If you don't have an SSH keypair generated already, generate one as described [here](#generating-ssh-keypair) before proceeding further.
+1. **location** - Choose your favourite Azure Region
 4. **adminpassword** - Password for logging in to the Windows jumpbox (remember to create a strong password)
 
 Rest of the variable values are picked up from terraform.tfvars file automatically
@@ -72,96 +56,68 @@ To start the terraform deployment, follow the steps listed below
 - Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
 - Clone the GitHub repository [https://github.com/karthikvenkat17/sap-cluster-openhack#](https://github.com/karthikvenkat17/sap-cluster-openhack)
 
-`git clone https://github.com/karthikvenkat17/sap-cluster-openhack.git`
+`git clone <link to git file>`
 
 
-![git clone init](images/gitclone.png)
-
-- Create a .ssh folder within the home directory and Copy the public key to a file name id_rsa.pub.
-- Go to the folder sap-cluster-openhack and run
+- Go to the new folder privatelink-dns-microhack and run
 
 `terraform init`
 
-This will initialize the terraform modules and download the azurerm resource provider
-
-![terraform init](images/terraforminit.png)
+- This will initialize the terraform modules and download the azurerm resource provider
 
 - Now run apply and provide the required inputs to start the deployment.
 
-It is possible to provide necessary inputs interactively or pass them as command line parameters.
+- It is possible to provide necessary inputs interactively or pass them as command line parameters.
 
 `terraform apply`
 
-**OR**
-
-`terraform apply -var 'rgname=SAP-Open-hack' -var 'location=EastUS2' -var 'sshkeypath=~/.ssh/id_rsa.pub'`
-
-![terraform apply](images/terraformapply.png)
-
-When prompted, confirm with a **yes** to start the deployment
-
-![terraform confirm](images/terraformconfirm.png)
+- When prompted, confirm with a **yes** to start the deployment
 
 - Wait for the deployment to complete. This will take approx. 10-15 minutes
 
+## Task 2 : Explore all the deployed resources
 
+- Verify you can access both Virtual Machines via Azure Bastion
 
-## Task 3 : Explore all the deployed resources
-
- - Check that you can login to SAP using SAP GUI
-
- - Check that you can connect to HANA database using HANA Studio
-
- - Check the status of HANA System Replication using HANA studio
-
- - Check the status of all the 3 clusters (HANA, NFS and ASCS). This can be done using SSH tools using command `crm status` or using **HAWK UI**
-
-[https://documentation.suse.com/sle-ha/15-SP1/html/SLE-HA-all/cha-conf-hawk2.html](https://documentation.suse.com/sle-ha/15-SP1/html/SLE-HA-all/cha-conf-hawk2.html)
-
-HAWK UI requires to login as user which is part of haclient group. Command to add tstadm user to haclient group 
-`usermod -a -G haclient tstadm`
-
+- Verify that the Virtual Machines are able to ping each other, proving that the Site-to-site VPN is online
 
 ### :point_right: Hint 
 
 **Tools required for this OpenHack are already installed in the Windows Jumpbox VM, they are available either as Desktop shortcuts or in C:\Software**
 
-**SAPGUI:** You need to create a new connection
-
- ![sapgui](images/sapgui.png)
-
-**HANA Studio:** Available in **C:\Software\eclipse** , HANA database connections SYSTEMDB and SAPHANADB already created. You will need to login using the HANA Database credentials provided.
-
-![hana studio](images/hana_studio.png)
-
-![db logon](images/db_logon.png)
-
-![hana db status](images/haandb.png)
-
-For logging into the VMs you can either use **SSH Client MobaXterm** (All connections are already created) or **Putty**. You will need to **provide your SSH Private Key** to each connection.
-
-
 ## :checkered_flag: Results
 
-- You have deployed an SAP S/4HANA environment using given Terraform template
-- You have become familiar to components of the SAP landscape you just deployed
-- You are now be able to login to the SAP system using various tools
-- High availability clustering is setup correctly for NFS, HANA and Central Services
-- HANA System Replication has been enabled
+- You have deployed a basic Azure and On-Premises environment given Terraform template
+- You have become familiar with the components you have deployed in your subscripiton
+- You are now be able to login to all VMs using the supplied credentials
+- On-Premises VMs can contact Azure VMs
+
+# Challenge 1 : Connect to Azure SQL
+
+### Goal 
 
 
+The goal of this exercise is to use the already existing image to deploy the SAP environment. Below is the High availability architecture for S/4 HANA which you need to deploy.
 
 
+![S4setup image](images/s4setup.jpg)
 
 
+## Task 1 : Deploy an Azure SQL Server
+
+Within the resource group named PaaS, deploy a simple Azure SQL Server in the same region as your Virtual Machines. How do we connect to this database by default, what networking information is needed, where do we find this?
+
+## Task 2:  Test default connectivity to Azure SQL
+
+- How are you connecting?
+- What IP address is this using? How would you test?
+- What tools are available on the SQL database to lock this down?
+
+- SQL Firewall
+- Service Endpoints
 
 
-
-
-
-
-
-## Challenge 2 : SAP Parameter tuning
+## Challenge 2 : Implement service endpoints for SAL
 
 ### Goal
 
@@ -180,25 +136,6 @@ You have found that the SAP HANA VMs are not tuned as per the SAP recommendation
 In SLES there are couple of tools available to tune the OS for running SAP namely sapconf and saptune. Sapconf performs minimum standard changes whereas saptune can apply SAP notes individually or bunch of notes relevant to the solution like SAP HANA, NetWeaver etc. You can use the customize option of saptune to edit a parameter within the note and apply it.
 
 
-You will need to install saptune by running `zypper install saptune`. Since the VMs are rebuilt using the images you need re-register the repos to point to Azure SMT using the steps below before installing saptune
-
-```suse
-rm /etc/SUSEConnect
-rm -f /etc/zypp/{repos,services,credentials}.d/*
-rm -f /usr/lib/zypp/plugins/services/*
-sed -i '/^# Added by SMT reg/,+1d'; /etc/hosts
-/usr/sbin/registercloudguest --force-new
-```
-
-Useful saptune commands (For solutions substitute note with solution in the below commands)
-
-```saptune
-saptune note list
-saptune note simulate <note number>
-saptune note apply <note number>
-saptune note customise <note number>
-(opens a vi editor where the note parameters value can be customized)
-```
 
 
 
