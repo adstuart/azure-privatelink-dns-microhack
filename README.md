@@ -54,40 +54,37 @@ Rest of the variable values are picked up from terraform.tfvars file automatical
 To start the terraform deployment, follow the steps listed below
 
 - Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
-- Clone the GitHub repository [https://github.com/karthikvenkat17/sap-cluster-openhack#](https://github.com/karthikvenkat17/sap-cluster-openhack)
+- Clone the GitHub repository 
 
-`git clone <link to git file>`
+`git clone https://github.com/carlsyner/Private-Endpoint-Hack-Template.git`
 
-
-- Go to the new folder privatelink-dns-microhack and run
+- Go to the new folder Private-Endpoint-Hack and initialize the terraform modules and download the azurerm resource provider
 
 `terraform init`
 
-- This will initialize the terraform modules and download the azurerm resource provider
-
-- Now run apply and provide the required inputs to start the deployment.
-
-- It is possible to provide necessary inputs interactively or pass them as command line parameters.
+- Now run apply to start the deployment (When prompted, confirm with a **yes** to start the deployment)
 
 `terraform apply`
 
-- When prompted, confirm with a **yes** to start the deployment
-
-- Wait for the deployment to complete. This will take approx. 10-15 minutes
+- Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take the longest to setup).
 
 ## Task 2 : Explore all the deployed resources
 
-- Verify you can access both Virtual Machines via Azure Bastion
+- Verify you can access the On-Premises Virtual Machine via RDP to the Public IP using the following credentials
 
-- Verify that the Virtual Machines are able to ping each other, proving that the Site-to-site VPN is online
+Username: AzureAdmin
+
+Password: Password1234!
+
+- Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This also proves that the Site-to-site VPN is online
 
 ### :point_right: Hint 
 
-**Tools required for this OpenHack are already installed in the Windows Jumpbox VM, they are available either as Desktop shortcuts or in C:\Software**
+**Desktop shortcuts exist for easy RDP access to other machines**
 
 ## :checkered_flag: Results
 
-- You have deployed a basic Azure and On-Premises environment given Terraform template
+- You have deployed a basic Azure and On-Premises environment using a Terraform template
 - You have become familiar with the components you have deployed in your subscripiton
 - You are now be able to login to all VMs using the supplied credentials
 - On-Premises VMs can contact Azure VMs
