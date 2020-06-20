@@ -36,7 +36,7 @@ In order to use the MicroHack time most effectively, the following tasks should 
 
 With the above pre-requisites in place, this will allow us to focus on building the differentiated knowledge in PrivateLink that the field requires, rather than spending hours repeating simple tasks such as setting up Virtual Networks and Virtual Machines. After complete these steps, the base lab build looks as follows:
 
-![S4setup image](images/pre.jpg)
+![S4setup image](images/base.png)
 
 ## Task 1 : Deploy Template
 
