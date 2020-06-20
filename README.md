@@ -377,7 +377,11 @@ Note that some of the metrics will fail as we are using smaller VMs without writ
 
 
 
+# Finished? Delete your lab
 
+- Go to the new folder Private-Endpoint-Hack and run the following command
+
+`terraform destroy`
 
 
 
