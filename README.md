@@ -66,6 +66,8 @@ To start the terraform deployment, follow the steps listed below
 
 `terraform apply`
 
+- Choose a suitable password to be used for your Virtual Machines
+
 - Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take the longest to setup).
 
 ## Task 2 : Explore all the deployed resources
@@ -74,7 +76,7 @@ To start the terraform deployment, follow the steps listed below
 
 Username: AzureAdmin
 
-Password: Password1234!
+Password: <see step above>
 
 - Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This also proves that the Site-to-site VPN is online
 
