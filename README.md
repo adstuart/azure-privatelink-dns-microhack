@@ -40,14 +40,7 @@ With the above pre-requisites in place, this will allow us to focus on building 
 
 ## Task 1 : Deploy Template
 
-Deploy the  environment using the Terraform template <tbc> . 
-
-The template requires following inputs:
-
-1. **location** - Choose your favourite Azure Region
-4. **adminpassword** - Password for logging in to the Windows jumpbox (remember to create a strong password)
-
-Rest of the variable values are picked up from terraform.tfvars file automatically
+We are going to use Terraform to deploy the base environment. It will be deployed in to your subscripiton, with resources running in the Azure West Europe region.
 
 **Additional information**
 
@@ -68,7 +61,7 @@ To start the terraform deployment, follow the steps listed below
 
 - Choose a suitable password to be used for your Virtual Machines
 
-- Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take the longest to setup).
+- Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take a while).
 
 ## Task 2 : Explore all the deployed resources
 
@@ -78,7 +71,7 @@ Username: AzureAdmin
 
 Password: <see step above>
 
-- Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This also proves that the Site-to-site VPN is online
+- Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This also proves that the Site-to-site VPN is online. 
 
 ### :point_right: Hint 
 
