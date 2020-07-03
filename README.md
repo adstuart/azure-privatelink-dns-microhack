@@ -38,7 +38,7 @@ With these pre-requisites in place, we can focus on building the differentiated 
 
 At the end of this seciton your base lab build looks as follows:
 
-![S4setup image](images/base.png)
+![image](images/base.png)
 
 In summary:
 
@@ -56,9 +56,9 @@ To start the terraform deployment, follow the steps listed below:
 - Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
 - Clone the following GitHub repository 
 
-`git clone https://github.com/carlsyner/Private-Endpoint-Hack-Template.git`
+`git clone https://github.com/carlsyner/privatelink-dns-microhack.git`
 
-- Go to the new folder ./Private-Endpoint-Hack and initialize the terraform modules and download the azurerm resource provider
+- Go to the new folder ./privatelink-dns-microhack and initialize the terraform modules and download the azurerm resource provider
 
 `terraform init`
 
@@ -101,17 +101,33 @@ The goal of this exercise is to deploy a simple Azure SQL Sever and observe the 
 
 ## Task 1 : Deploy an Azure SQL Server
 
-Within the resource group named PaaS, deploy a simple Azure SQL Server in the same region as your Virtual Machines. How do we connect to this database by default, what networking information is needed, where do we find this?
+Within the resource group named private-link-microhack-hub-rg, deploy a simple Azure SQL Server in the West Europe. Example config shown below.
+
+![image](images/1.png)
+
+How do we connect to this database by default, what networking information is needed, where do we find this?
 
 ## Task 2:  Test default connectivity to Azure SQL
 
-- How are you connecting?
-- What IP address is this using? How would you test?
-- What tools are available on the SQL database to lock this down?
+Using the FQDN obtained in the previous step, confirm that your Azure Management Client VM can establish a connection to your SQL Server. Launch SQL Server Management Studio (SSMS) and input your SQL Server details and credentials.
 
-- SQL Firewall
-- Service Endpoints
+![image](images/2a.png)
 
+- Why does this connection fail?
+
+## Task 2:  Modify SQL server firewall
+
+- What settings on the Azure SQL server firewall do you need to modify?
+
+- How can you verify which source Public IP address your Azure Management Client VM is using when accessing the Internet?
+
+- How can you verify which destination Public IP is being used when connecting to your SQL Server FQDN?
+
+![image](images/2.png)
+
+## :checkered_flag: Results
+
+- You have deployed a basic Azure SQL Server and connected to it from your Azure client VM. You have confirmed that you are accessing it via the "Internet" (This traffic does not leave the Microsoft backbone, but it does use Public IP addresses). The traffic is sourced from the dynamic NAT address on your client VM, and is destined to a public IP address sitting in front of the Azure SQL Service. 
 
 ## Challenge 2 : Implement service endpoints for SAL
 
