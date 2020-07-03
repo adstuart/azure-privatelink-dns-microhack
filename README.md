@@ -1,6 +1,6 @@
 # **Azure Private Link DNS MicroHack**
 
-# Contents //update this last//
+# Contents
 
 [MicroHack introduction and context](#Scenario)
 
