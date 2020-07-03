@@ -129,69 +129,33 @@ Using the FQDN obtained in the previous step, confirm that your Azure Management
 
 - You have deployed a basic Azure SQL Server and connected to it from your Azure client VM. You have confirmed that you are accessing it via the "Internet" (This traffic does not leave the Microsoft backbone, but it does use Public IP addresses). The traffic is sourced from the dynamic NAT address on your client VM, and is destined to a public IP address sitting in front of the Azure SQL Service. 
 
-## Challenge 2 : Implement service endpoints for SAL
+# Challenge 2 : Implement Service Endpoints to restrict access to your Azure SQL Server
 
 ### Goal
 
+The goal of this challenge is to implement Service Endpoints to restrict access to your Azure SQL Server; turning off inbound connections from Public IPs (The Internet) and only allowing access from the subnet within which your Azure Client VM Resides.
 
-The goal of this challenge is to tune SUSE operating system to SAP recommendation with minimum administrative efforts and apply changes with almost zero downtime.
+## Task 1: Remove public IP address from SQL Server firewall
 
+Within the previous step we added the public NAT IP address used by our client VM to the SQL Server firewall. Please remove this IP address and save the firewall settings. This ensure that no inbound connecitons are permitted from any public IP address.
 
-## Task 1: Tune SAP parameter with minimum administrative effort
+## Task 2: Enable Service Endpoints on your subnet
 
-You have found that the SAP HANA VMs are not tuned as per the SAP recommendations.  Some of the recommendations in SAP note # 2382421 are not applied.  In this challenge you need to tune the parameters as per this SAP note except `net.ipv4.tcp_timestamps` which needs to be set to 0 for Azure
+On your Infra subnet, within the Azure Spoke VNet, enable Service Endpoints for Azure.SQL. 
 
+![image](images/3.png)
 
-### :point_right: Hint
+## Task 3: Enable Virtual Network access within SQL Server Firewall
 
-
-In SLES there are couple of tools available to tune the OS for running SAP namely sapconf and saptune. Sapconf performs minimum standard changes whereas saptune can apply SAP notes individually or bunch of notes relevant to the solution like SAP HANA, NetWeaver etc. You can use the customize option of saptune to edit a parameter within the note and apply it.
-
-
-
-
-
-## Task 2: Reboot VMs with least business outage 
-
-
- You need to ensure that these changes persist after reboot. Also confirm that the **HANA** failover works fine.
-
-
-### :point_right: Hint 
-
-This could be done in several ways. You will be using some of the below commands to do this task
-
-`crm node standby <nodename>` - Make the node offline for the cluster
-
-`crm node online <nodename>` - Make the node online for the cluster
-
-`crm cluster stop` - Stopping the cluster service on the node where it is executed
-
-`crm cluster start` - Starting the cluster service on the node where it is executed
-
-`crm resource migrate <resource name>` - Migrate a resource from one node to another
-
-`crm resource clear <resource name>` - Remove migration constraints from resources
-
-`crm resource cleanup <resource name>` - Cleanup any previous errors in the cluster
-
-
+Create a new Virtual Network rule within your SQL Server Firewall allowing access from the InfrastructureSubnet within which your Azure Client VM resides. Notice how it recognises that you have enabled the service endpoint for Azure.SQL in Task 1.
 
 ## :checkered_flag: Results
 
-- You have tuned the OS parameters as per SAP note easily using the right tools.
-- You have tested the HANA HA setup and tested the user experience during failover.
+- Your SQL Server is no longer accepting connections from any Public IP address. It only accepts connections from your specific Subnet where service endpoints are enabled. Verify that you are still able to connect to your server via SSMS.
 
+### :point_right: Hint 
 
-
-
-
-
-
-
- 
-
-
+**Even with service endpoints enabled, we are still sending destination traffic to the Public Interface of our SQL Server. The difference is how the traffic is sourced; now utilisaiton a special "VNET:Subnet" tag, rather than the Public IP address in Step 1**
 
 # Challenge 3 : SAP HANA Backup using Azure native tools
 
