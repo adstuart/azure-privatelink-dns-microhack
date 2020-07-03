@@ -308,7 +308,7 @@ Verify:
 
 - You are now using Azure Private Link to access your SQL server from On-Premises, entirely via your Privately IP addresses Hybrid Site-to-Site VPN Connection. You have modified your DNS configuration to make this work, as depicted in the packet walk diagram below.
 
-<diagram>
+![image](images/15.PNG)
  
 # Challenge 7 : (Warning! Stretch Goal / Advanced) Use Private Link from On-Premises without a pre-existing DNS Server in Azure
 
