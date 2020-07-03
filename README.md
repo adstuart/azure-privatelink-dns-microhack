@@ -103,7 +103,7 @@ The goal of this exercise is to deploy a simple Azure SQL Sever and observe the 
 
 Within the resource group named private-link-microhack-hub-rg, deploy a simple Azure SQL Server in the West Europe. Example config shown below.
 
-![image](images/1.png)
+![image](images/1.PNG)
 
 How do we connect to this database by default, what networking information is needed, where do we find this?
 
@@ -123,7 +123,7 @@ Using the FQDN obtained in the previous step, confirm that your Azure Management
 
 - How can you verify which destination Public IP is being used when connecting to your SQL Server FQDN?
 
-![image](images/2.png)
+![image](images/2.PNG)
 
 ## :checkered_flag: Results
 
@@ -143,11 +143,13 @@ Within the previous step we added the public NAT IP address used by our client V
 
 On your Infra subnet, within the Azure Spoke VNet, enable Service Endpoints for Azure.SQL. 
 
-![image](images/3.png)
+![image](images/3.PNG)
 
 ## Task 3: Enable Virtual Network access within SQL Server Firewall
 
-Create a new Virtual Network rule within your SQL Server Firewall allowing access from the InfrastructureSubnet within which your Azure Client VM resides. Notice how it recognises that you have enabled the service endpoint for Azure.SQL in Task 1.
+Create a new Virtual Network rule within your SQL Server Firewall allowing access from the InfrastructureSubnet within which your Azure Client VM resides. Notice how it recognises that you have enabled the service endpoint for Azure.SQL in Task 1 - "service endpoint status = enabled".
+
+![image](images/4.PNG)
 
 ## :checkered_flag: Results
 
