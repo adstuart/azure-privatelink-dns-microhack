@@ -300,7 +300,7 @@ Run a quick nslookup from your client VM on-premises, and notice that it recieve
 
 Your On-Premises DNS Server is now configured to forward all unknown requests to 8.8.8.8, but has a more specific condition to forward requests matching *.database.windows.net* to 10.0.0.4; the IP address of your Azure DNS server, reached via the Site-to-Site VPN. Further reading on this specific subject: https://github.com/dmauser/PrivateLink/tree/master/DNS-Integration-Scenarios#41-which-conditional-forwarder-zone-should-be-used. 
 
-# Task 4: Verify
+## Task 4: Verify
 
 Verify:
 
