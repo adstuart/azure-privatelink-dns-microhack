@@ -193,67 +193,78 @@ In order to access your SQL Server via its "Private interface" we need to setup 
 
 ![image](images/6.PNG)
 
+## Task 2: Observe deployed resources and functions
 
+Once deployed you now have some new resources in your spoke resource group:
 
-### :point_right: Hint 
+- A **Private Endpoint** named something like PE-SQL. Notice how it obtains an IP dynamically (10.1.0.5). Also notice how it has been auto-approved on the provider side (this happened because you have the appropriate RBAC rights on the SQL Server). If you did not, for example the SQL server you were trying to connect to was within another Azure AD tenant, the servie owner would approve conneciton on their side.
+- An **Azure DNS Private Zone** for privatelink.database.windows.net. This was automatically created for you as part of the portal experience for Private Endpoints. Have a look within this resource and notice how you have an A record mapping your PE IP of 10.1.0.5 to your SQL Server FQDN. Click on Virtual Network Links and also observe how this zone is linked to your spoke-vnet.
 
-- You will need an additional subnet within the existing VNET (by adding a new address space) for App gateway creation
-- Activate SAP ports HTTP (8000) and HTTPS (8001) using transaction SMICM.
-- Note that the FQDN for SAP hostname doesn't resolve within the jumpbox. Use the IP address or just the hostname. 
-- SSL is not in scope for this lab. Disable HTTPS switch for Fiori launchpad by changing the properties of service **/sap/bc/ui2/flp** in SICF. Changes need to be made in the Logon data tab and Error Pages tab (System Configuration). 
-- Pay attention to NSG rules necessary for Application Gateway and your networking setup
+## Task 3: Test private connectivity via your Private Endpoint
 
+Back on your Client VM, re-run the nslookup command you used earlier to check what IP address is being used by your SQL server. Notice how the DNS lookup now returns a Private IP address, and not a Public IP.
+
+![image](images/7.PNG)
+
+Re-connect using SSMS and ensure access is working again.
 
 ## :checkered_flag: Results
 
-- You have now demonstrated how SAP endpoints can be securely published to internet with the help of Azure App gateway.
-
-
-
-
-
-
-
-
-
-
-
-
-# Challenge 5 : Setup dashboards for the SAP environment
+- You have connected to your SQL server via a new Private Endpoint
+- Your SSMS conneciton is still using the same FQDN <database-name>.database.windows.net, no client changes were required. However your Azure DNS Private Zone is defined for <database-name>.**privateliink**.database.windows.net. How is this re-direct happening? Pay close attention to the output of your nslookup command earlier.
+ - Notice how an Azure DNS Private Zone was deployed for you, and automatically setup with the correct A record and VNet link. Would the same thing happen if using AZ CLI or Powershell to deploy your Private Endpoint? If not, what would be required?
+ 
+# Challenge 5 : Work with a custom DNS server inside of Azure
 
 ### Goal 
 
-Use Azure monitor to check performance of the SAP environment and setup dashboards.
+In the previous challenge we successfully used Azure Private Link and Azure DNS Private Zones to connect in a secure way to our SQL server. This worked great as we were able to link our Azure DNS Private Zone direct to the spoke Virtual Network. The Spoke Virtual network has the default DNS settings; sending all DNS requests by default to Azure DNS via the special 168.63.129.16 address. More on that here https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16. 
 
-## Task : Setup Availability and Performance dashboard for SAP 
+However the previous challenge was not reflective of a real world configuration for lots of customers. Many Azure network designs use a custom DNS solution such as customer manged DNS running on top of an IaaS Virtual Machine (or pair of VMs) hosted in the Azure VNet. In this challenge we will alter our Spoke VNet to utilise our custom DNS server inside of the Azure VNet; a Windows Server 2019 VM running Microsoft DNS. We will also ensure we retain access to our SQL Server and that the DNS response continues to include the use of our Private Endpoint IP address.
 
-The IT leadership team has requested for an availability and performance dashboard for the SAP environment. The dashboard must contain key performance metrics and availability for all the SAP VMs that have been deployed. 
+## Task 1 : Change Spoke VNet DNS settings
 
+Update the Spoke VNet custom DNS settings to point at your DNS Server VM inside of the Hub VNet. In a production deployment this would typicaly consist of a pair of VMs, for our lab we only have a single VM.
 
-### :point_right: Hint 
+![image](images/8.PNG)
 
+Reboot your Azure client VM so that it picks up the new DNS settings.
 
- Use Azure monitor for this exercise. Check what metrics are collected by default. There are several ways to visualize log and metric data stored in Azure Monitor
- It is sufficient to setup monitoring dashboard using **any one** of the following methods.
+Re-run your nslookup command to check the IP address returned for your SQL database. Notice how the DNS server used is now 10.0.0.4, but the A record returned has not regressed to using the public VIP of SQL. Access will not work in this configuration as you are not utilising your Private Endpoint.
 
-- Workbooks
-- Azure dashboard
-- PowerBI dashboard
-- Grafana dashboard
+![image](images/9.PNG)
 
+Why has this happened if your Azure DNS private zone is still in place?
 
-[https://docs.microsoft.com/en-us/azure/azure-monitor/visualizations](https://docs.microsoft.com/en-us/azure/azure-monitor/visualizations)
+## Task 2 : Modify Azure DNS Private Zone
 
-See example dashboards below
+Your Azure DNS Private Zone is only linked to your Spoke VNet. However, your Spoke VNet is now sending its requests for DNS to the DNS Server inside of your Hub VNet. This in turn is configured to query Azure DNS. As your Azure DNS Private Zone is not linked to your Hub VNet, requests from this VNet utilise only the records held within the Public Zones. Lets change that by swinging the Virtual Network link over from your Spoke VNet, to your Hub VNet.
 
-![azuremonitor](images/azuremonitor.png)
+![image](images/10.PNG)
 
-![pbi](images/pbi.png)
+## Task 3 : Add conditional forwarder to DNS Server VM in Azure
 
+Your custom DNS server inside of Azure consists of a standard Windows Server 2019 VM, with the DNS role enabled. The default configuration of this is to send all unknown DNS requests to something called Root Hints (A known collection of servers on the Internet that can be used for public DNS lookups). You can veirfy this via logging in to the VM and looking at the server properties in DNS Manager.
+
+![image](images/11.PNG)
+
+This means that any DNS requests are being forwarded to our DNS Server and then on to public Root Hints server off on the public Internet. (You can see these server details within the Root Hunts tab FYI). Unfortunately whilst this is great for enabling a Microsoft DNS Server to function with its default config, it also means that requests are not being sent to Azure DNS (via the special 168 address mentioned earlier), and therefore our use of Azure DNS Private Zones is failing.
+
+We could fix this in one of two ways. Either by enabling a specific forwarder (known as conditional forwarding in DNS) to our database.windows.net zone, or we can just tell our server to forward all requests to Azure DNS by default. We will dig in to the former as part of a later challenge, so lets go with the easier option of updating our global forwarder within DNS Manager to point at Azure DNS.
+
+![image](images/12.PNG)
+
+# Task 4: Verify
+
+Verify:
+
+- Clear the DNS cache on your Azure client VM via 'ipconfig /flushdns'. 
+- Clear the DNS cache on your Azure DNS server. (Connect via RDP, browse DNS Manager, right-click server name 'clear cache')
+- Re-run nslookup on the client VM in Azure to ensure the Private IP is once again being returned, and you are able to browse via SSMS, proving that Private Link is operational
 
 ## :checkered_flag: Results
 
-- You now have centralized dashboards reporting performance and availability of your SAP S/4 HANA.
+- You are now using Azure Private Link to access your SQL server alongside the use of a custom DNS server inside of Azure. DNS requests from your client VM within the Spoke VNet are being sent via the Microsoft Windows Server inside of your Hub VNet. This server is configured to send all unknown requests to Azure DNS.
 
 
 
