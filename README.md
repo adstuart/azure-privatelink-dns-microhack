@@ -159,100 +159,41 @@ Create a new Virtual Network rule within your SQL Server Firewall allowing acces
 
 **Even with service endpoints enabled, we are still sending destination traffic to the Public Interface of our SQL Server. The difference is how the traffic is sourced; now utilisaiton a special "VNET:Subnet" tag, rather than the Public IP address in Step 1**
 
-# Challenge 3 : SAP HANA Backup using Azure native tools
+# Challenge 3 : Deny public access to Azure SQL Server
 
 ### Goal
 
-SAP HANA, like other database, offers the possibility to backup to files. In addition, it also offers a backup API, which allows third-party backup tools to integrate directly with SAP HANA. Products like Azure Backup service, or Commvault are using this proprietary interface to trigger SAP HANA database or redo log backups. SAP HANA offers a third possibility, HANA backup based on storage snapshots. The focus of this challenge is to configure **Azure Backup for SAP HANA**.
+In this step we will block all inbound access to your SQL Server on its public interface. This means that any existing Firewall rules (Public IP or Virtual Network) will fail to work. This will then create our requirement to peform challenge 4; the use of Private Endpoints for connectivity.
+
+Furhter reading on this step
+
+https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings#deny-public-network-access
  
+## Task 1 :  Turn off Public access
 
-
-## Task 1 :  Prepare HANA VMs for Azure Backup
-
-Contoso Group have asked you to prepare SAP HANA virtual machines for Azure Backup using BACKINT API.
-
-You need to perform all pre-requisites and setup network connectivity to allow Azure Backup to connect to SAP HANA database as per this document.
-
-[https://docs.microsoft.com/en-us/azure/backup/tutorial-backup-sap-hana-db](https://docs.microsoft.com/en-us/azure/backup/tutorial-backup-sap-hana-db)
-
-
-### :point_right: Hint 
-
-
-Your HANA database is running over a 2 node highly available cluster. For this hack **configure it only on the active node**. 
-
-Also, you may need to register your HANA virtual machines to access SUSE repos and install package unixODBC, if not already installed.
-
-Run following commands as root to install unixODBC
-
-`zypper install unixODBC`
-
-You will need to create SAP HANA HDBUSERSTORE Key named SYSTEM for user SYSTEM for password less authentication.
-
-Run following commands as tstadm on HANA virtual machine
-
-Syntax
-
-`hdbuserstore -i SET <KEY> host:port <USERNAME> <PASSWORD>`
-
-Test the connection using following command.
-
-`hdbsql -U SYSTEM`
-
-On the hdbsql prompt, type \s to check the status and ensure you can connect.
-
-
-
-## Task 2 : Run backup for HANA using Azure Backup
-
-Contoso Group have asked you to create a backup configuration to meet their requirements and to start the first backup right away.
-
-Contoso deem it sufficient to take full backups once a week over the weekend, but want to optimize the cost and time required for backup and restore by using an optimized backup and retention policy. In the scenario where a restore becomes necessary, they want to be able to restore with no more than 20 minutes of loss of data.
-
-Create an appropriate backup and retention policy and backup your SAP HANA database using Azure Backup.
-
-
-### :point_right: Hint 
-
-The key steps are - create a recovery services vault, configure backup, create a backup policy and backup.
-
-[https://docs.microsoft.com/en-us/azure/backup/tutorial-backup-sap-hana-db#create-a-recovery-service-vault](https://docs.microsoft.com/en-us/azure/backup/tutorial-backup-sap-hana-db#create-a-recovery-service-vault)
-
+![image](images/5.PNG)
 
 ## :checkered_flag: Results
 
-- You have configured and run Azure backup for HANA database
+- You have blocked all public access, verify that your Virtual Machine is no longer able to access via SSMS.
 
-
-
-
-
-
-
-
-
-
-
-  
-# Challenge 4 : Securing Fiori access from internet
+# Challenge 4 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL
 
 ### Goal
 
-Expose specific SAP endpoints to internet without adding public IPs to SAP VMs.
+In order to access your SQL Server via its "Private interface" we need to setup a new Private Endpoint and map this to your specific server. This will allow us to access the SQL server from your client VM, whilst retaining the use of "deny public access".
+
+## Task 1 : Setup Private Endpoint
+
+- Search for Private Link in the portal and click on "create private endpoint".
+- Use your spoke resource-group and give it a name such as PE-SQL
+- Within step 2 "resource" we choose which PaaS service we want to point our Private Endpoint at. Look within your directory to find your SQL Server (use resource type microsoft.sql/servers and sub-resource sqlServer)
+- Within step 3 "configuration" we choose where to place your Private Endpoint NIC. Place it within the same InfrastructureSubnet as your VM, this will be the default. 
+- Leave the Private DNS Integration at the default "yes". More on this later.
+
+![image](images/6.PNG)
 
 
-## Task : Make SAP Fiori launchpad accessible from Internet 
-
-Contoso group wants to expose their SAP Fiori launchpad to internet. They would like to do this in a secure way without exposing any other parts of SAP.  Security team at Contoso wants proof that only Fiori launchpad can be accessed and any attempt to access other urls will result in error. 
-
-URL for Fiori launchpad
-
-http://hostname:port/sap/bc/ui2/flp
-
-
-You can use Azure app gateway for this exercise. Below diagram explains how application gateway works. 
-
-![App gateway image](https://docs.microsoft.com/en-us/azure/application-gateway/media/how-application-gateway-works/how-application-gateway-works.png)
 
 ### :point_right: Hint 
 
