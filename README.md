@@ -266,50 +266,65 @@ Verify:
 
 - You are now using Azure Private Link to access your SQL server alongside the use of a custom DNS server inside of Azure. DNS requests from your client VM within the Spoke VNet are being sent via the Microsoft Windows Server inside of your Hub VNet. This server is configured to send all unknown requests to Azure DNS.
 
+# Challenge 6 : Use Private Link to access an Azure SQL database over a Private Hybrid Connection
+
+### Goal
+
+The goal of this exercise is to show how Private Link can be used to access an Azure PaaS service over a private hybrid connection. This could be either an ExpressRoute Private Peering or a Site-to-site VPN. In our lab we use the later for ease of deployment. This is a key use for Private Link and in high demand by customers, as it enables access to PaaS services on a Private IP address from On-Premises locations, as opposed to via a Public Interface which would typically traverse the Public Internet (Or ExpressRoute Microsoft Peering if that is in place).
+
+## Task 1 :  Consider hybrid topology and expected packet flow 
+
+We already verified as part of hack pre-requisites that our On-Premises network can access our Azure environment (the fact that your RDP access works also proves this!). Therefore at a basic Layer-3 network level we have access from our On-Premises VM to the IP address of our Private Endpoint in the Spoke VNet.
+
+However the complexity of On-Premises use of Private Endpoints it not one of network routing, but more one of DNS. Our On-Premises DNS server (which our On-Premises client is configured to use) sends all unknown requests out to the Internet (8.8.8.8). This is fairly typical of an On-Premises DNS server with a companies Data Centre, either using Public DNS servers or the DNS server from their incumbent Internet Service Provider (ISP). Re-visit the topology diagram at the start of the hack to see this configuration in visual format.
+
+As we discovered in Challenge 4, we need to modify our DNS requests in order to use Private Link. The same applies to On-Premises traffic, but the challenge is made more difficult by one key fact: Your On-Premises DNS server does not live in Azure! (Well it does in this lab, but lets ignore that ;-) ). Due to this, it cannot query the special 168.63.129.16 address; this only exists within Azure, and can only be queries by compute entities living on an Azure Host.
+
+We therefore need to modify our On-Premises DNS configuration to only forward certain requests (for the PaaS services we are using Private Link for) to something that lives in our Azure Virtual Network, which in turn can "proxy" these requests on to Azure DNS via the special 168 address. Luckily for us, and most customers, we have something that is listening for DNS requests in our VNet; our Hub DNS Server with IP address 10.0.0.4!
+
+## Task 2 :  Verify default behaviour or On-Premises client VM
+
+Run a quick nslookup from your client VM on-premises, and notice that it recieves back the public IP for your SQL server. Also note the DNS server being used (192.168.0.4 - the On-Premises DNS Server in your topology).
+
+![image](images/13.PNG)
+
+## Task 3 :  Setup conditional forwarder
+
+- Login to your On-Premises DNS Server and open DNS Manager. 
+- Observe the global forwarder for 8.8.8.8.
+- Configure a new conditional forwarder for database.winodws.net pointing at your Azure DNS Server (10.0.0.4)
+
+![image](images/14.PNG)
+
+Your On-Premises DNS Server is now configured to forward all unknown requests to 8.8.8.8, but has a more specific condition to forward requests matching *.database.windows.net* to 10.0.0.4; the IP address of your Azure DNS server, reached via the Site-to-Site VPN. Further reading on this specific subject: https://github.com/dmauser/PrivateLink/tree/master/DNS-Integration-Scenarios#41-which-conditional-forwarder-zone-should-be-used. 
 
 
+# Task 4: Verify
 
+Verify:
 
+- Clear the DNS cache on your On-Premises client VM via 'ipconfig /flushdns'. 
+- Clear the DNS cache on your On-Premises DNS server. (Connect via RDP, browse DNS Manager, right-click server name 'clear cache')
+- Re-run nslookup on the client VM in Azure to ensure the Private IP is once again being returned, launch SSMS and ensure you are able to access your SQL Server.
 
+## :checkered_flag: Results
 
+- You are now using Azure Private Link to access your SQL server from On-Premises, entirely via your Privately IP addresses Hybrid Site-to-Site VPN Connection. You have modified your DNS configuration to make this work, as depicted in the packet walk diagram below.
 
-
-
-
-
-
-
-# Challenge 6 : HANA performance validation
+<diagram>
+ 
+# Challenge 7 : (Warning! Stretch Goal / Advanced) Use Private Link from On-Premises without a pre-existing DNS Server in Azure
 
 
 ### Goal
 
-The goal of this exercise is to validate the setup of HANA infrastrcture.
+What would happen if you were given Challenge 6 but did not have an existing DNS Server inside of Azure? How would you proxy DNS requests to the 168 address? In this challenge we will introduce two solutions to this problem. This is for customers that do not have exisitng IaaS DNS servers inside of Azure to perform this DNS request proxy function.
 
-## Task :  Check HANA parameters and performance 
+## Task 1 :  Consider hybrid topology and expected packet flow 
 
-You want to ensure that the HANA infrastructure is setup correctly and is performing as expected without involving the testing and functional teams to run tests.
-
-
-
-### :point_right: Hint  
-
-Use HANA mini checks SQL to verify the parameters and metrics of HANA. See SAP note # 1999993 - How-To: Interpreting SAP HANA Mini Check results
-
-To check if infrastructure is setup correctly use HWCCT or HCMT tool. Both the tools are downloaded and available in the directory `/hana/backup/HANA_perftools` of HANA node tst-hana-vm-0
-
-Note that some of the metrics will fail as we are using smaller VMs without write accelerators for our test deployment.
-
-
-
-
-## :checkered_flag: Results
-
-- You now successfully verified that SAP HANA system is setup correctly for optimum performance.
-
-
-
-
+We already verified as part of hack pre-requisites that our On-Premis
+ 
+ 
 # Finished? Delete your lab
 
 - Go to the new folder Private-Endpoint-Hack and run the following command
@@ -317,26 +332,5 @@ Note that some of the metrics will fail as we are using smaller VMs without writ
 `terraform destroy`
 
 
-
-
-
-
-
-
-
-
-
-
-# Appendix
-
-### Generating SSH keypair
-
-- Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
-- Generate SSH keypair using the command `ssh-keygen` as shown in the screenshot below
-
-  ![keygen](images/keygen.jpg)
-
-- Use the public key (id_rsa.pub) for the deployment. 
-- Download the private key to your desktop using the download button at the top. You will be using this file for logging into the linux VMs 
 
 
