@@ -2,23 +2,21 @@
 
 # Contents //update this last//
 
-[Lab Overview and Pre-req](#lab-overview)
+[MicroHack introduction and context](#Scenario)
 
-[Challenge 1 : Connect to Azure SQL](#challenge-1--deploying-the-sap-s4-hana-landscape)
+[Challenge 1 : Connect to Azure SQL](#challenge-1--connect-to-azure-sql)
 
-[Challenge 2 : Deploy service endpoints](#challenge-2--sap-parameter-tuning)
+[Challenge 2 : Implement Service Endpoints to restrict access to your Azure SQL Server](#challenge-2--implement-service-endpoints-to-restrict-access-to-your-azure-sql-server)
 
-[Challenge 3 : Deploy private endpoint for SQL](#challenge-3--sap-hana-backup-using-azure-native-tools)
+[Challenge 3 : Deny public access to Azure SQL Server](#challenge-3--deny-public-access-to-azure-sql-server)
 
-[Challenge 4 : Implement Azure DNS Private Zones integration](#challenge-4--securing-fiori-access-from-internet)
+[Challenge 4 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL](#challenge-4--deploy-a-private-endpoint-to-utilise-azure-private-link-for-access-to-azure-sql)
 
-[Challenge 5 : Implement custom DNS integration (Windows DNS on Windows Server 2019)](#challenge-5--setup-dashboards-for-the-sap-environment)
+[Challenge 5 : Work with a custom DNS server inside of Azure](#challenge-5--work-with-a-custom-dns-server-inside-of-azure)
 
-[Challenge 6 : Implement On-Premises access using conditional forwarding](#challenge-6--hana-performance-validation)
+[Challenge 6 : Use Private Link to access an Azure SQL database over a Private Hybrid Connection](#challenge-6--use-private-link-to-access-an-azure-sql-database-over-a-private-hybrid-connection)
 
-[Challenge 7 : Optional, hard! Implement On-Premises access within using existing Azure hosted custom DNS server](#challenge-6--hana-performance-validation)
-
-[Appendix](#appendix)
+[Challenge 7 : (Warning! Stretch Goal / Advanced) Use Private Link from On-Premises without a pre-existing DNS Server in Azure](#challenge-7--warning-stretch-goal--advanced-use-private-link-from-on-premises-without-a-pre-existing-dns-server-in-azure)
 
 # Scenario
 
