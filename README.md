@@ -22,11 +22,11 @@
 
 # Scenario
 
-Contoso group is a consumer electrical retail company. The company works within a regulated industry and would like to secure their use of Azure PaaS services. As part of the evaluation the IT team has started to look at using Azure Private Link. Due to technical reasons this was put on hold and they have turned to Microsoft for support.
+Contoso group is a consumer electrical retail company. The company works within a regulated industry and would like to secure their use of Azure PaaS services. As part of the evaluation the IT team has started to look at using **Azure Private Link**. 
 
 ## Context
 
-Different types of customer DNS. Link to Daniels work on accessing DNS landscape within a customer and top 5 questions to ask.
+This MicroHack scenario walks through the use of Azure Private Link with a focus on the required changes needed for DNS. Specifically this builds up to include working with a an existing custom DNS infrastrucutre (I.e. a customer using their own Virtual Machines for Internal DNS Resolution). In this lab we use Microsoft DNS running on top of Microsoft Windows Server 2019, but your customer could be using another DNS solution such as BIND on Linux, or Infoblox.
 
 # Pre-requisites
 
@@ -34,24 +34,31 @@ Different types of customer DNS. Link to Daniels work on accessing DNS landscape
 
 In order to use the MicroHack time most effectively, the following tasks should be completed prior to starting the session.
 
-With the above pre-requisites in place, this will allow us to focus on building the differentiated knowledge in PrivateLink that the field requires, rather than spending hours repeating simple tasks such as setting up Virtual Networks and Virtual Machines. After complete these steps, the base lab build looks as follows:
+With these pre-requisites in place, we can focus on building the differentiated knowledge in Private Link that is required when working with the product, rather than spending hours repeating simple tasks such as setting up Virtual Networks and Virtual Machines. 
+
+At the end of this seciton your base lab build looks as follows:
 
 ![S4setup image](images/base.png)
+
+In summary:
+
+- "On-Premises" environment simulated by Azure Virtual Network
+- On-Premises contains a client VM and a DNS Server VM
+- On-Premises is connected to Azure via a Site-to-Site VPN
+- Azure contains a simple Hub and Spoke topology, with a client VM and DNS Server VM
 
 ## Task 1 : Deploy Template
 
 We are going to use Terraform to deploy the base environment. It will be deployed in to your subscripiton, with resources running in the Azure West Europe region.
 
-**Additional information**
-
-To start the terraform deployment, follow the steps listed below
+To start the terraform deployment, follow the steps listed below:
 
 - Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
-- Clone the GitHub repository 
+- Clone the following GitHub repository 
 
 `git clone https://github.com/carlsyner/Private-Endpoint-Hack-Template.git`
 
-- Go to the new folder Private-Endpoint-Hack and initialize the terraform modules and download the azurerm resource provider
+- Go to the new folder ./Private-Endpoint-Hack and initialize the terraform modules and download the azurerm resource provider
 
 `terraform init`
 
@@ -63,7 +70,7 @@ To start the terraform deployment, follow the steps listed below
 
 - Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take a while).
 
-## Task 2 : Explore all the deployed resources
+## Task 2 : Explore and verify the deployed resources
 
 - Verify you can access the On-Premises Virtual Machine via RDP to the Public IP using the following credentials
 
@@ -71,11 +78,11 @@ Username: AzureAdmin
 
 Password: <see step above>
 
-- Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This also proves that the Site-to-site VPN is online. 
+- Verify that you are able to hop from the jumpbox to all Virtual Machines, using their Private IP addresses and RDP access. This step also proves that the Site-to-site VPN is online. 
 
 ### :point_right: Hint 
 
-**Desktop shortcuts exist for easy RDP access to other machines**
+**Desktop shortcuts exist for easy RDP access to other virtual machines**
 
 ## :checkered_flag: Results
 
@@ -84,16 +91,13 @@ Password: <see step above>
 - You are now be able to login to all VMs using the supplied credentials
 - On-Premises VMs can contact Azure VMs
 
+Now that we have the base lab deployed, we can progress to the Private Link challenges!
+
 # Challenge 1 : Connect to Azure SQL
 
 ### Goal 
 
-
-The goal of this exercise is to use the already existing image to deploy the SAP environment. Below is the High availability architecture for S/4 HANA which you need to deploy.
-
-
-![S4setup image](images/s4setup.jpg)
-
+The goal of this exercise is to deploy a simple Azure SQL Sever and observe the default network behaviour when connecting to it. 
 
 ## Task 1 : Deploy an Azure SQL Server
 
