@@ -84,7 +84,7 @@ Password: <see step above>
 
 ## Task 3 : Install SQL Server Management Studio on Client Virtual Machines
 
-- As part of this Micro Hack you will need
+- As part of this Micro Hack you will need the above software on both the On-Premises Client VM and Azure Client VM. Please install this prior to the lab.
 
 ## :checkered_flag: Results
 
@@ -342,6 +342,8 @@ https://github.com/microsoft/PL-DNS-Proxy
 - Open your Azure Cloud Shell and go to the folder ./privatelink-dns-microhack and run the following command
 
 `terraform destroy`
+
+- Remove the remaining resource by delete the resource group private-link-microhack-spoke-rg
 
 Thanks for participating in this Micro Hack!
 
