@@ -82,6 +82,10 @@ Password: <see step above>
 
 **Desktop shortcuts exist for easy RDP access to other virtual machines**
 
+## Task 3 : Install SQL Server Management Studio on Client Virtual Machines
+
+- As part of this Micro Hack you will need
+
 ## :checkered_flag: Results
 
 - You have deployed a basic Azure and On-Premises environment using a Terraform template
