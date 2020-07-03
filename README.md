@@ -32,7 +32,7 @@ This MicroHack scenario walks through the use of Azure Private Link with a focus
 
 ## Overview
 
-In order to use the MicroHack time most effectively, the following tasks should be completed prior to starting the session.
+In order to use the MicroHack time most effectively, the following s should be completed prior to starting the session.
 
 With these pre-requisites in place, we can focus on building the differentiated knowledge in Private Link that is required when working with the product, rather than spending hours repeating simple tasks such as setting up Virtual Networks and Virtual Machines. 
 
@@ -115,7 +115,7 @@ Using the FQDN obtained in the previous step, confirm that your Azure Management
 
 - Why does this connection fail?
 
-## Task 2:  Modify SQL server firewall
+## Task 3:  Modify SQL server firewall
 
 - What settings on the Azure SQL server firewall do you need to modify?
 
@@ -254,7 +254,7 @@ We could fix this in one of two ways. Either by enabling a specific forwarder (k
 
 ![image](images/12.PNG)
 
-# Task 4: Verify
+## Task 4: Verify
 
 Verify:
 
@@ -298,7 +298,6 @@ Run a quick nslookup from your client VM on-premises, and notice that it recieve
 
 Your On-Premises DNS Server is now configured to forward all unknown requests to 8.8.8.8, but has a more specific condition to forward requests matching *.database.windows.net* to 10.0.0.4; the IP address of your Azure DNS server, reached via the Site-to-Site VPN. Further reading on this specific subject: https://github.com/dmauser/PrivateLink/tree/master/DNS-Integration-Scenarios#41-which-conditional-forwarder-zone-should-be-used. 
 
-
 # Task 4: Verify
 
 Verify:
@@ -320,17 +319,29 @@ Verify:
 
 What would happen if you were given Challenge 6 but did not have an existing DNS Server inside of Azure? How would you proxy DNS requests to the 168 address? In this challenge we will introduce two solutions to this problem. This is for customers that do not have exisitng IaaS DNS servers inside of Azure to perform this DNS request proxy function.
 
-## Task 1 :  Consider hybrid topology and expected packet flow 
+### :point_right: Hint 
 
-We already verified as part of hack pre-requisites that our On-Premis
+**These advanced tasks are left open ended on purpose, without solutions, to solicit group discussion.**
+
+## Option 1 :  Utilise advanced features of Azure Firewall to proxy DNS requests
+
+Perhaps you do not have DNS Servers inside of Azure but you **do** have an Azure Firewall deployed. Have a look at one of the new features of Azure Firewall and consider how this could be used in place of our Hub VNet DNS Server.
+
+https://docs.microsoft.com/en-us/azure/firewall/dns-settings
  
+Note this feature is currently in public preview.
+
+## Option 2 :  Deploy a light-weight highly-available DNS proxy based on NGINX
+
+https://github.com/microsoft/PL-DNS-Proxy
  
 # Finished? Delete your lab
 
-- Go to the new folder Private-Endpoint-Hack and run the following command
+- Open your Azure Cloud Shell and go to the folder ./privatelink-dns-microhack and run the following command
 
 `terraform destroy`
 
+Thanks for participating in this Micro Hack!
 
 
 
