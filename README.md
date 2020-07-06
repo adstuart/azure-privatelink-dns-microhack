@@ -8,9 +8,9 @@
 
 [Challenge 2 : Implement Service Endpoints to restrict access to your Azure SQL Server](#challenge-2--implement-service-endpoints-to-restrict-access-to-your-azure-sql-server)
 
-[Challenge 3 : Deny public access to Azure SQL Server](#challenge-3--deny-public-access-to-azure-sql-server)
+[Challenge 3 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL](#challenge-3--deploy-a-private-endpoint-to-utilise-azure-private-link-for-access-to-azure-sql)
 
-[Challenge 4 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL](#challenge-4--deploy-a-private-endpoint-to-utilise-azure-private-link-for-access-to-azure-sql)
+[Challenge 4 : Deny public access to Azure SQL Server](#challenge-4--deny-public-access-to-azure-sql-server)
 
 [Challenge 5 : Work with a custom DNS server inside of Azure](#challenge-5--work-with-a-custom-dns-server-inside-of-azure)
 
@@ -63,7 +63,7 @@ To start the terraform deployment, follow the steps listed below:
 - Login to Azure cloud shell [https://shell.azure.com/](https://shell.azure.com/)
 - Clone the following GitHub repository 
 
-`git clone https://github.com/adstuart/azure-privatelink-dns-microhack.git`
+`git clone https://github.com/adstuart/script/azure-privatelink-dns-microhack.git`
 
 - Go to the new folder ./privatelink-dns-microhack and initialize the terraform modules and download the azurerm resource provider
 
@@ -117,7 +117,7 @@ Within the resource group named private-link-microhack-hub-rg, deploy a simple A
 
 ![image](images/1.PNG)
 
-How do we connect to this database by default, what networking information is needed, where do we find this?
+How do we connect to this SQL Server by default, what networking information is needed, where do we find this?
 
 ## Task 2:  Test default connectivity to Azure SQL
 
@@ -175,25 +175,7 @@ Now verify that you are still able to connect to your SQL server via SSMS.
 
 **Even with service endpoints enabled, we are still sending destination traffic to the Public Interface of our SQL Server. The difference is how the traffic is sourced; now utilising a special "VNET:Subnet" tag, rather than the Public IP address in Step 1**
 
-# Challenge 3 : Deny public access to Azure SQL Server
-
-### Goal
-
-In this step we will block all inbound access to your SQL Server on its public interface. This means that any existing Firewall rules (Public IP or Virtual Network) will fail to work. This will then create a requirement to perform challenge 4; the use of Private Endpoints for connectivity.
-
-Further reading on this step
-
-https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings#deny-public-network-access
- 
-## Task 1 :  Turn off Public access
-
-![image](images/5.PNG)
-
-## :checkered_flag: Results
-
-- You have blocked all public access, verify that your Virtual Machine is no longer able to access your SQL Server via SSMS.
-
-# Challenge 4 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL
+# Challenge 3 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL
 
 ### Goal
 
@@ -231,6 +213,24 @@ Re-connect using SSMS and ensure access is working again.
 - Your SSMS connection is still using the same FQDN <database-name>.database.windows.net, no client changes were required. However your Azure DNS Private Zone is defined for <database-name>.**privateliink**.database.windows.net. How is this re-direct happening? Pay close attention to the output of your nslookup command earlier.
  - Notice how an Azure DNS Private Zone was deployed for you, and automatically setup with the correct A record and VNet link. Would the same thing happen if using AZ CLI or Powershell to deploy your Private Endpoint? If not, what would be required?
  
+# Challenge 4 : Deny public access to Azure SQL Server
+
+### Goal
+
+In this step we will block all inbound access to your SQL Server on its public interface. This means that any existing Firewall rules (Public IP or Virtual Network) will fail to work. To be clear **this prevents any access from a public IP address, or use of service endpoints; I.e. the Virtual Network link you added to the SQL firewall is now no longer active. With this setting toggled "on", you can only use private endpoints to access your service**
+
+Further reading on this step
+
+https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings#deny-public-network-access
+ 
+## Task 1 :  Turn off Public access
+
+![image](images/5.PNG)
+
+## :checkered_flag: Results
+
+- You have blocked all public access. 
+ 
 # Challenge 5 : Work with a custom DNS server inside of Azure
 
 ### Goal 
@@ -247,7 +247,7 @@ Update the Spoke VNet custom DNS settings to point at your DNS Server VM inside 
 
 **Reboot** your Azure client VM so that it picks up the new DNS settings.
 
-Re-run your nslookup command to check the IP address returned for your SQL database. Notice how the DNS server used is now 10.0.0.4, but the A record returned has now regressed to using the public VIP of SQL. Access will not work in this configuration as you are not utilising your Private Endpoint.
+Re-run your nslookup command to check the IP address returned for your SQL Server. Notice how the DNS server used is now 10.0.0.4, but the A record returned has now regressed to using the public VIP of SQL. Access will not work in this configuration as you are not utilising your Private Endpoint.
 
 ![image](images/9.PNG)
 
@@ -283,7 +283,7 @@ Verify:
 
 - You are now using Azure Private Link to access your SQL server alongside the use of a custom DNS server inside of Azure. DNS requests from your client VM within the Spoke VNet are being sent via the Microsoft Windows Server inside of your Hub VNet. This server is configured to send all unknown requests to Azure DNS.
 
-# Challenge 6 : Use Private Link to access an Azure SQL database over a Private Hybrid Connection
+# Challenge 6 : Use Private Link to access an Azure SQL Server over a Private Hybrid Connection
 
 ### Goal
 
