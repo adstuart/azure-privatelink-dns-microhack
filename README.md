@@ -93,7 +93,7 @@ Password: {as per above step}
 
 ## Task 3 : Install SQL Server Management Studio on Client Virtual Machines
 
-- As part of this MicroHack you will SQL Server Management Studio installed on both the On-Premises Client VM and Azure Client VM. Please install this prior to the lab. https://www.microsoft.com/en-gb/sql-server/sql-server-downloads. Alternatively, a drive can be mapped to an Azure File Share to copy the SSMS-setup files. Execute MAPDrive shortcut from the ONPrem-Mgmt-VM.
+- As part of this MicroHack you will SQL Server Management Studio installed on both the On-Premises Client VM and Azure Client VM. Please install this prior to the lab. https://www.microsoft.com/en-gb/sql-server/sql-server-downloads. Alternatively, a drive can be mapped to an Azure File Share to copy the SSMS-setup files. Execute MAPDrive shortcut from the the ONPREM-MGMT-VM.
 
 ## :checkered_flag: Results
 
