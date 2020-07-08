@@ -242,7 +242,7 @@ https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings#
 
 The following diagram from the documentation provides further explanation on this subject:
 
-![image](images/flow.PNG)
+![image](images/flow.png)
  
 # Challenge 5 : Work with a custom DNS server inside of Azure
 
