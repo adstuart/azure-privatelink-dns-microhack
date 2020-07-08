@@ -65,7 +65,7 @@ To start the terraform deployment, follow the steps listed below:
 
 `git clone https://github.com/adstuart/azure-privatelink-dns-microhack`
 
-- Go to the new folder ./privatelink-dns-microhack and initialize the terraform modules and download the azurerm resource provider
+- Go to the new folder azure-privatelink-dns-microhack and initialize the terraform modules and download the azurerm resource provider
 
 `terraform init`
 
@@ -93,7 +93,7 @@ Password: {as per above step}
 
 ## Task 3 : Install SQL Server Management Studio on client/mgmt Virtual Machines
 
-- As part of this MicroHack you will SQL Server Management Studio installed on both the On-Premises client/mgmt VM and Azure client/mgmt VM. Please install this prior to the lab. https://www.microsoft.com/en-gb/sql-server/sql-server-downloads. Alternatively, a drive can be mapped to an Azure File Share to copy the SSMS-setup files. Run the MAPDrive script which can be found on the desktop of ONPREM-MGMT-VM. 
+- As part of this MicroHack you will SQL Server Management Studio installed on both the On-Premises client/mgmt VM and Azure client/mgmt VM. Please install this prior to the lab. https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15. Alternatively, run the MAPDrive script which can be found on the desktop of ONPREM-MGMT-VM.
 
 ## :checkered_flag: Results
 
@@ -116,6 +116,10 @@ The goal of this exercise is to deploy a simple Azure SQL Server and observe the
 Within the resource group named private-link-microhack-hub-rg, deploy a simple Azure SQL Server in the West Europe. Example config shown below.
 
 ![image](images/1.PNG)
+
+### :point_right: Hint 
+
+**Your own SQL Server name will need to be unique, please name accordingly**
 
 How do we connect to this SQL Server by default, what networking information is needed, where do we find this?
 
