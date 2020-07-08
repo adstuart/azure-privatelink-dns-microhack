@@ -141,6 +141,10 @@ Using the FQDN obtained in the previous step, confirm that your Azure Management
 
 ![image](images/2.PNG)
 
+### :point_right: Hint, watch out! 
+
+**Make sure that "Allow Azure services and resources to access this server" is set at its default setting of No**. Otherwise your SQL server will accept (at a network level, they will of course need a suitable username and password) connections from all subscriptions inside of Auzre. See here for more details https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure#connections-from-inside-azure
+
 ## :checkered_flag: Results
 
 - You have deployed a basic Azure SQL Server, modified the default firewall settings, and connected to it from your Azure client/mgmt VM. You have confirmed that you are accessing it via the "Internet" (This traffic does not leave the Microsoft backbone, but it does use Public IP addresses). The traffic is sourced from the dynamic NAT address of your client/mgmt VM and is destined to a public IP address sitting in front of the Azure SQL Service. 
@@ -183,7 +187,7 @@ Now verify that you are still able to connect to your SQL server via SSMS.
 
 ### Goal
 
-In order to access your SQL Server via its "Private interface" we need to setup a new Private Endpoint and map this to your specific server. This will allow us to access the SQL server from your client/mgmt VM, whilst retaining the use of setting "deny public access".
+In order to access your SQL Server via its "Private interface" we need to setup a new Private Endpoint and map this to your specific server. This will allow us to access the SQL server from your client/mgmt VM, without using the Public interface via IP or Virtual Network Firewall Rules.
 
 ## Task 1 : Setup Private Endpoint
 
@@ -234,6 +238,11 @@ https://docs.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings#
 ## :checkered_flag: Results
 
 - You have blocked all public access. 
+- Please note, you are only able to toggle this setting on after configuring at least one "Private Endpoint Connection" on your SQL Server PaaS resource.
+
+The following diagram from the documentation provides further explanation on this subject:
+
+![image](images/flow.PNG)
  
 # Challenge 5 : Work with a custom DNS server inside of Azure
 
