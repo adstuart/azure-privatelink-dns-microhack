@@ -143,7 +143,7 @@ Using the FQDN obtained in the previous step, confirm that your Azure Management
 
 ### :point_right: Hint, watch out! 
 
-**Make sure that "Allow Azure services and resources to access this server" is set at its default setting of No**. Otherwise your SQL server will accept (at a network level, they will of course need a suitable username and password) connections from all subscriptions inside of Auzre. See here for more details https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure#connections-from-inside-azure
+**Make sure that "Allow Azure services and resources to access this server" is set at its default setting of No**. Otherwise your SQL server will accept (at a network level, they will of course need a suitable username and password) connections from all subscriptions inside of Azure. See here for more details https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure#connections-from-inside-azure
 
 ## :checkered_flag: Results
 
@@ -268,7 +268,7 @@ Why has this happened if your Azure DNS private zone is still in place?
 
 ## Task 2 : Modify Azure DNS Private Zone
 
-Your Azure DNS Private Zone is only linked to your Spoke VNet. However, your Spoke VNet is now sending its requests for DNS to the DNS Server inside of your Hub VNet. This in turn is configured to query Azure DNS. As your Azure DNS Private Zone is not linked to your Hub VNet, requests from this VNet utilise only the records held within the Public Zones. Let's change that by swinging the Virtual Network link over from your Spoke VNet, to your Hub VNet.
+Your Azure DNS Private Zone is only linked to your Spoke VNet. However, your Spoke VNet is now sending its requests for DNS to the DNS Server inside of your Hub VNet. This in turn is configured to query Azure DNS. As your Azure DNS Private Zone is not linked to your Hub VNet, requests from this VNet utilise only the records held within the Public Zones. Let's change that by first deleting our Azure DNS Private Zones Network Link to the spoke VNet, and then setup a new Virtual Network link to your Hub VNet.
 
 ![image](images/10.PNG)
 
@@ -322,7 +322,7 @@ Run a quick nslookup from your client/mgmt VM on-premises, and notice that it re
 
 - Login to your On-Premises DNS Server and open DNS Manager. 
 - Observe the global forwarder for 8.8.8.8.
-- Configure a new conditional forwarder for database.winodws.net pointing at your Azure DNS Server (10.0.0.4)
+- Configure a new conditional forwarder for database.windows.net pointing at your Azure DNS Server (10.0.0.4)
 
 ![image](images/14.PNG)
 
