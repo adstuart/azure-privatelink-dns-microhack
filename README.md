@@ -45,7 +45,7 @@ With these pre-requisites in place, we can focus on building the differentiated 
 
 At the end of this section your base lab build looks as follows:
 
-![image](images/base.png)
+![image](images/base.PNG)
 
 In summary:
 
