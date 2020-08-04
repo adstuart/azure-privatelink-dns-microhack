@@ -12,7 +12,7 @@ variable "username" {
 
 variable "password" {
   description = "Password must meet Azure complexity requirements"
-   type        = string
+  type        = string
 }
 
 variable "vmsize" {
