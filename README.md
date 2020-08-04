@@ -303,41 +303,41 @@ The goal of this exercise is to show how Private Link can be used to access an A
 
 ## Task 1 :  Consider hybrid topology and expected packet flow 
 
-We already verified as part of the MicroHack pre-requisites that our On-Premises network can access our Azure environment (the fact that your RDP access works also proves this!). Therefore, at a basic Layer-3 network level we have access from our On-Premises VM to the IP address of our Private Endpoint in the Spoke VNet.
+We already verified as part of the MicroHack pre-requisites that our On-Premises network can access our Azure environment. Therefore, at a basic Layer-3 IP-Routing network level we have access from our *onprem-mgmt-vm* VM to the IP address of our Private Endpoint in the Spoke VNet.
 
-However, the complexity of On-Premises use of Private Endpoints is not one of network routing, but more one of DNS. Our On-Premises DNS server (which our On-Premises client is configured to use) sends all unknown requests out to the Internet (8.8.8.8). This is typical of an On-Premises DNS server within a company's Data Centre, either using Public DNS servers or the DNS server from their incumbent Internet Service Provider (ISP). Re-visit the topology diagram at the start of the Micro Hack to see this configuration in visual format.
+However, the complexity of On-Premises use of Private Endpoints is not one of network routing, but more one of DNS. Our On-Premises DNS server (*onprem-dns-vm* VM) (which our On-Premises client (*onprem-mgmt-vm* VM) is configured to use) sends all unknown requests out to the Internet (8.8.8.8). This is typical of an On-Premises DNS server within a company's Data Centre, either using Public DNS servers or the DNS server from their incumbent Internet Service Provider (ISP). Please re-visit the topology diagram at the start of the Micro Hack to see this configuration in visual format.
 
-As we discovered in Challenge 4, we need to modify our DNS requests in order to use Private Link. The same applies to On-Premises traffic, but the challenge is made more difficult by one key consideration: **Your On-Premises DNS server does not live in Azure! (Well it does in this lab, but let's ignore that ;-) ). Due to this, it cannot query the special 168.63.129.16 address; this only exists within Azure, and can only be queried by compute entities living on an Azure Host.**
+As we observed in Challenge 4, we need to modify our DNS requests in order to use Private Link. The same applies to On-Premises traffic, but the challenge is made more difficult by one key consideration: **Your On-Premises DNS server does not live in Azure! (Well it does in this lab, but let's ignore that ;-) ). Due to this, it cannot query the special 168.63.129.16 address; this only exists within Azure, and can only be queried by resources residing on an Azure Host.**
 
-We therefore need to modify our On-Premises DNS configuration to only forward certain requests (for the PaaS services we are using Private Link for) to something that lives in our Azure Virtual Network, which in turn can "proxy" these requests on to Azure DNS via the special 168 address. Luckily for us, and most customers, we have something that is listening for DNS requests in our VNet; our Hub DNS Server with IP address 10.0.0.4!
+We therefore need to modify our On-Premises DNS configuration to only forward certain requests (for the PaaS services we are using Private Link for) to something that lives in our Azure Virtual Network, which in turn can "proxy" these requests on to Azure DNS via the special 168 address. Luckily for us, and most customers, we have something that is listening for DNS requests in our VNet; our Hub DNS Server (*az-dns-vm* VM)with IP address 10.0.0.4!
 
 ## Task 2 :  Verify default behaviour or On-Premises client/mgmt VM
 
-Run a quick nslookup from your client/mgmt VM on-premises, and notice that it receives back the public IP for your SQL server. Also note the DNS server being used (192.168.0.4 - the On-Premises DNS Server in your topology).
+Run a quick nslookup from your *onprem-client-vm* VM, and notice that it receives back the public IP for your SQL server. Also note the DNS server being used is 192.168.0.4 - the On-Premises DNS Server in your topology (*onprem-dns-vm* VM).
 
 ![image](images/13.PNG)
 
 ## Task 3 :  Setup conditional forwarder
 
-- Login to your On-Premises DNS Server and open DNS Manager. 
+- Login to your *onprem-dns-vm* VM and open DNS Manager. 
 - Observe the global forwarder for 8.8.8.8.
-- Configure a new conditional forwarder for database.windows.net pointing at your Azure DNS Server (10.0.0.4)
+- Configure a new conditional forwarder for database.windows.net pointing at your Azure DNS Server (*az-dns-vm* VM - 10.0.0.4)
 
 ![image](images/14.PNG)
 
-Your On-Premises DNS Server is now configured to forward all unknown requests to 8.8.8.8, but has a more specific condition to forward requests matching *.database.windows.net* to 10.0.0.4; the IP address of your Azure DNS server, reached via the Site-to-Site VPN. Further reading on this specific subject: https://github.com/dmauser/PrivateLink/tree/master/DNS-Integration-Scenarios#41-which-conditional-forwarder-zone-should-be-used. 
+Your On-Premises DNS Server (*onprem-dns-vm* VM) is now configured to forward all unknown requests to 8.8.8.8, but has a more specific condition to forward requests matching *.database.windows.net* to 10.0.0.4; the IP address of your Azure DNS server (*az-dns-vm* VM), reached via the Site-to-Site VPN. Further reading on this specific subject is available at https://github.com/dmauser/PrivateLink/tree/master/DNS-Integration-Scenarios#41-which-conditional-forwarder-zone-should-be-used. 
 
 ## Task 4: Verify
 
 Verify:
 
-- Clear the DNS cache on your On-Premises client/mgmt VM via 'ipconfig /flushdns'. 
-- Clear the DNS cache on your On-Premises DNS server. (Connect via RDP, browse DNS Manager, right-click server name 'clear cache')
-- Re-run nslookup on the client/mgmt VM in Azure to ensure the Private IP is once again being returned, launch SSMS and ensure you are able to access your SQL Server.
+- Clear the DNS cache on your *onprem-client-vm* VM via 'ipconfig /flushdns'. 
+- Clear the DNS cache on your *onprem-dns-vm* VM. (Browse DNS Manager, right-click server name 'clear cache')
+- Re-run nslookup on the *onprem-client-vm* VM to ensure the Private IP is once again being returned, launch SSMS and ensure you are able to access your SQL Server.
 
 ## :checkered_flag: Results
 
-- You are now using Azure Private Link to access your SQL server from On-Premises, entirely via your privately IP addressed Hybrid Site-to-Site VPN Connection. You have modified your DNS configuration to make this work, as depicted in the packet walk diagram below.
+- You are now using Azure Private Link to access your SQL server from On-Premises, entirely via your privately IP addressed Hybrid Site-to-Site VPN Connection. You have modified your DNS configuration to make this work, as depicted in the packet-walk diagram below.
 
 ![image](images/15.PNG)
  
@@ -346,7 +346,7 @@ Verify:
 
 ### Goal
 
-What would happen if you were given Challenge 6 but did not have an existing DNS Server inside of Azure? How would you proxy DNS requests to the 168 address? In this challenge we will introduce two solutions to this problem. This is for customers that do not have existing IaaS DNS servers inside of Azure to perform this DNS request proxy function.
+What would happen if you were given Challenge 6 but did not have an existing DNS Server inside of Azure (I.e. *az-dms-vm* VM did not exist)? How would you proxy DNS requests to the 168 address? In this challenge we will introduce two solutions to this problem. This is for customers that do not have existing IaaS DNS servers inside of Azure to perform this DNS request proxy function.
 
 ### :point_right: Hint 
 
@@ -360,17 +360,15 @@ https://docs.microsoft.com/en-us/azure/firewall/dns-settings
  
 Note this feature is currently in public preview.
 
+Further reading - https://github.com/adstuart/azure-privatelink-dns-azurefirewall
+
 ## Option 2 :  Deploy a light-weight highly-available DNS proxy based on NGINX
 
 https://github.com/microsoft/PL-DNS-Proxy
  
 # Finished? Delete your lab
 
-- Open your Azure Cloud Shell and go to the folder ./privatelink-dns-microhack and run the following command
-
-`terraform destroy`
-
-- Remove the remaining resources by deleting the resource group private-link-microhack-spoke-rg
+- Delete the resource group privatelink-dns-microhack-rg
 
 Thank you for participating in this MicroHack!
 
