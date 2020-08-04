@@ -28,12 +28,12 @@ This MicroHack scenario walks through the use of Azure Private Link with a focus
 
 This lab is not a full explanation of Azure Private Link as a technology, please consider the following articles required pre-reading to build foundational knowledge.
 
-aka.ms/whatisprivatelink - Introductory video on Private Link
-aka.ms/whyprivatelink - High level white paper exploring the requirement for Private Link.
+- aka.ms/whatisprivatelink - Introductory video on Private Link
+- aka.ms/whyprivatelink - High level white paper exploring the requirement for Private Link.
 
 Optional (read this after completing this lab to take your learning even deeper!
 
-aka.ms/privatelinkdns - Technical white paper introducing the DNS challenge when working with Private Link
+- aka.ms/privatelinkdns - Technical white paper introducing the DNS challenge when working with Private Link
 
 # Pre-requisites
 
