@@ -196,7 +196,7 @@ In order to access your SQL Server via its "Private interface" we need to setup 
 - Search for Private Link in the portal and click on "create private endpoint".
 - Deploy to the MicroHack RG and give it a name such as PE-SQL
 - Within step 2 "resource" we choose which PaaS service we want to point our Private Endpoint at. Look within your directory to find your SQL Server (use resource type microsoft.sql/servers and sub-resource sqlServer)
-- Within step 3 "configuration" we choose where to place your Private Endpoint NIC. Place it within the same InfrastructureSubnet as your VM, this will be the default. 
+- Within step 3 "configuration" we choose where to place your Private Endpoint NIC. Place it within the same InfrastructureSubnet as your *az-mgmt-vm* VM (within the Spoke).
 - Leave the Private DNS Integration at the default "yes". More on this later.
 
 ![image](images/6.PNG)
