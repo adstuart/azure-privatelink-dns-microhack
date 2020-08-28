@@ -180,10 +180,15 @@ Now verify that you are still able to connect to your SQL server via SSMS.
 ## :checkered_flag: Results
 
 - Your SQL Server is no longer accepting connections from any Public IP address. It only accepts connections from your a specific subnet where service endpoints are enabled. 
+- Using the nslookup command, from your *az-mgmt-vm* check the DNS response being returned for your SQL Server FQDN. Notice how the DNS lookup returns a Public IP.
 
 ### :point_right: Hint 
 
 **Even with service endpoints enabled, we are still sending destination traffic to the Public Interface of our SQL Server. The difference is how the traffic is sourced; now utilising a special "VNET:Subnet" tag, rather than the Public IP address in Step 1**
+
+## Task 4: Remove Service Endpoints
+
+Before proceeding to challenge 3, remove your Service Endpoint configuraiton from the subnet, and remove the Virtual Network rule from the SQL server firewall. 
 
 # Challenge 3 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL
 
@@ -211,7 +216,11 @@ Once deployed you now have some new resources in your MicroHack resource group:
 
 ## Task 3: Test private connectivity via your Private Endpoint
 
-Back on your *az-mgmt-vm* VM, re-run the nslookup command you used earlier to check what IP address is being used by your SQL server. Notice how the DNS lookup now returns a Private IP address, and not a Public IP.
+Back on your *az-mgmt-vm* VM, re-run the nslookup command you used earlier to check what IP address is being used by your SQL server. 
+
+### :point_right: Hint 
+
+**Notice how the DNS lookup now returns a Private IP address, and not a Public IP.**
 
 ![image](images/7.PNG)
 
@@ -220,7 +229,7 @@ Re-connect using SSMS and ensure access is working again.
 ## :checkered_flag: Results
 
 - You have connected to your SQL server via a new Private Endpoint
-- Your SSMS connection is still using the same FQDN <database-name>.database.windows.net, no client changes were required. However your Azure DNS Private Zone is defined for <database-name>.**privateliink**.database.windows.net. How is this re-direct happening? Pay close attention to the output of your nslookup command earlier.
+- Your SSMS connection is still using the same FQDN <database-name>.database.windows.net, no client changes were required. However your Azure DNS Private Zone is defined for <database-name>.**privatelink**.database.windows.net. How is this re-direct happening? Pay close attention to the output of your nslookup command earlier.
  - Notice how an Azure DNS Private Zone was deployed for you, and automatically setup with the correct A record and VNet link. Would the same thing happen if using AZ CLI or Powershell to deploy your Private Endpoint? If not, what would be required? How could we automate this step when working via the ARM API outside of the portal?
  
 # Challenge 4 : Deny public access to Azure SQL Server
@@ -317,7 +326,7 @@ We therefore need to modify our On-Premises DNS configuration to only forward ce
 
 ## Task 2 :  Verify default behaviour or On-Premises client/mgmt VM
 
-Run a quick nslookup from your *onprem-client-vm* VM, and notice that it receives back the public IP for your SQL server. Also note the DNS server being used is 192.168.0.4 - the On-Premises DNS Server in your topology (*onprem-dns-vm* VM).
+Run a quick nslookup from your *onprem-mgmt-vm* VM, and notice that it receives back the public IP for your SQL server. Also note the DNS server being used is 192.168.0.4 - the On-Premises DNS Server in your topology (*onprem-dns-vm* VM).
 
 ![image](images/13.PNG)
 
