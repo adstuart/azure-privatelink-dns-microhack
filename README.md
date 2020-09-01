@@ -169,9 +169,11 @@ On your InfrastructureSubnet subnet, within the spoke-vnet VNet, enable Service 
 
 ![image](images/3.PNG)
 
+Please ensure that the subnet as fully updated before carrying on to the next step. In can take a few minutes.
+
 ## Task 3: Enable Virtual Network access within SQL Server Firewall
 
-Create a new Virtual Network rule within your SQL Server Firewall allowing access from the InfrastructureSubnet within which your *az-mgmt-vm* VM resides. Notice how it recognises that you have enabled the service endpoint for Azure.SQL in Task 1 - "service endpoint status = enabled".
+Create a new Virtual Network rule within your SQL Server Firewall allowing access from the InfrastructureSubnet within which your *az-mgmt-vm* VM resides. Notice how it recognises that you have enabled the service endpoint for Azure.SQL in Task 1 - "Service endpoint status = Enabled".
 
 ![image](images/4.PNG)
 
@@ -188,7 +190,7 @@ Now verify that you are still able to connect to your SQL server via SSMS.
 
 ## Task 4: Remove Service Endpoints
 
-Before proceeding to challenge 3, remove your Service Endpoint configuraiton from the subnet, and remove the Virtual Network rule from the SQL server firewall. 
+Before proceeding to challenge 3, remove your Service Endpoint configuration from the subnet, and remove the Virtual Network rule from the SQL Server firewall. 
 
 # Challenge 3 : Deploy a Private Endpoint to utilise Azure Private Link for access to Azure SQL
 
@@ -198,9 +200,9 @@ In order to access your SQL Server via its "Private interface" we need to setup 
 
 ## Task 1 : Setup Private Endpoint
 
-- Search for Private Link in the portal and click on "create private endpoint".
+- Search for Private Link in the portal and click on "Create private endpoint".
 - Deploy to the MicroHack RG and give it a name such as PE-SQL
-- Within step 2 "resource" we choose which PaaS service we want to point our Private Endpoint at. Look within your directory to find your SQL Server (use resource type microsoft.sql/servers and sub-resource sqlServer)
+- Within step 2 "resource" we choose which PaaS service we want to point our Private Endpoint at. Look within your directory to find your SQL Server (use resource type Microsoft.Sql/servers and sub-resource sqlServer)
 - Within step 3 "configuration" we choose where to place your Private Endpoint NIC. Place it within the same InfrastructureSubnet as your *az-mgmt-vm* VM (within the Spoke).
 - Leave the Private DNS Integration at the default "yes". More on this later.
 
@@ -275,7 +277,7 @@ From your *az-mgmt-vm* VM re-run your nslookup command to check the IP address r
 
 ![image](images/9.PNG)
 
-Consisder why has this happened if your Azure DNS private zone is still in place?
+Consider why has this happened if your Azure DNS privateq zone is still in place?
 
 ## Task 2 : Modify Azure DNS Private Zone
 
@@ -312,7 +314,7 @@ Verify:
 
 ### Goal
 
-The goal of this exercise is to show how Private Link can be used to access an Azure PaaS service over a private hybrid connection. This could be either an ExpressRoute Private Peering or a Site-to-site VPN. In our lab we use the latter for ease of deployment. This is a core benefit of Private Link and in high demand by customers, as it enables access to PaaS services on a Private IP address from On-Premises locations, as opposed to via a Public Interface which would typically traverse the Public Internet (Or ExpressRoute Microsoft Peering if that is in place).
+The goal of this exercise is to show how Private Link can be used to access an Azure PaaS service over a private hybrid connection. This could be either an ExpressRoute Private Peering or a Site-to-site VPN. In our lab we use the latter for ease of deployment. This is a core benefit of Private Link and in high demand by customers, as it enables access to PaaS services on a Private IP address from On-Premises locations, as opposed to via a Public Interface which would typically traverse the Public Internet (or ExpressRoute Microsoft Peering if that is in place).
 
 ## Task 1 :  Consider hybrid topology and expected packet flow 
 
@@ -344,9 +346,9 @@ Your On-Premises DNS Server (*onprem-dns-vm* VM) is now configured to forward al
 
 Verify:
 
-- Clear the DNS cache on your *onprem-client-vm* VM via 'ipconfig /flushdns'. 
+- Clear the DNS cache on your *onprem-mgmt-vm* VM via 'ipconfig /flushdns'. 
 - Clear the DNS cache on your *onprem-dns-vm* VM. (Browse DNS Manager, right-click server name 'clear cache')
-- Re-run nslookup on the *onprem-client-vm* VM to ensure the Private IP is once again being returned, launch SSMS and ensure you are able to access your SQL Server.
+- Re-run nslookup on the *onprem-mgmt-vm* VM to ensure the Private IP is once again being returned, launch SSMS and ensure you are able to access your SQL Server.
 
 ## :checkered_flag: Results
 
