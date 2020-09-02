@@ -169,7 +169,7 @@ On your InfrastructureSubnet subnet, within the spoke-vnet VNet, enable Service 
 
 ![image](images/3.PNG)
 
-Please ensure that the subnet as fully updated before carrying on to the next step. In can take a few minutes.
+Please ensure that the subnet is fully updated before carrying on to the next step. (In can take a few minutes).
 
 ## Task 3: Enable Virtual Network access within SQL Server Firewall
 
@@ -278,7 +278,7 @@ From your *az-mgmt-vm* VM re-run your nslookup command to check the IP address r
 
 ![image](images/9.PNG)
 
-Consider why has this happened if your Azure DNS privateq zone is still in place?
+Consider why has this happened if your Azure DNS private zone is still in place?
 
 ## Task 2 : Modify Azure DNS Private Zone
 
