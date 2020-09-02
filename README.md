@@ -270,6 +270,7 @@ Update the Spoke VNet custom DNS settings to point at your *az-dns-vm* VM inside
 ![image](images/8.PNG)
 
 **Reboot** your *az-mgmt-vm* VM so that it picks up the new DNS settings.
+Or **ipconfig /renew ** should work. Check with ipconfig /all
 
 From your *az-mgmt-vm* VM re-run your nslookup command to check the IP address returned for your SQL Server. Notice how the DNS server used is now 10.0.0.4 (the IP address of your *az-dns-vm* VM), but the A record returned has now regressed to using the public VIP of SQL. Access to your SQL Server will not work in this configuration as you are not utilising your Private Endpoint.
 
