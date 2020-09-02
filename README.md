@@ -169,7 +169,7 @@ On your InfrastructureSubnet subnet, within the spoke-vnet VNet, enable Service 
 
 ![image](images/3.PNG)
 
-Please ensure that the subnet is fully updated before carrying on to the next step. (In can take a few minutes).
+Please ensure that the subnet is fully updated before carrying on to the next step. It can take a few minutes.
 
 ## Task 3: Enable Virtual Network access within SQL Server Firewall
 
@@ -177,7 +177,7 @@ Create a new Virtual Network rule within your SQL Server Firewall allowing acces
 
 ![image](images/4.PNG)
 
-Now verify that you are still able to connect to your SQL server via SSMS.
+Now verify that you are still able to connect to your SQL Server via SSMS.
 
 ## :checkered_flag: Results
 
