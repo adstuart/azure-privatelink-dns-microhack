@@ -132,6 +132,7 @@ Using the FQDN obtained in the previous step, confirm that your *az-mgmt-vm* VM 
 ![image](images/2a.png)
 
 - Why does this connection fail?
+- SQL Server Management Studio will prompt you for your Azure credentials so it can add the firewall rule for you. **Don't do this** because we want to add the rule manually.
 
 ## Task 3:  Modify SQL server firewall
 
@@ -291,6 +292,8 @@ Your Azure DNS Private Zone is only linked to your Spoke VNet. However, your Spo
 Your custom DNS server inside of Azure consists of a Windows Server 2019 VM, with the DNS role enabled. The default configuration of this is to send all unknown DNS requests to something called Root Hints (A known collection of servers on the Internet that can be used for public DNS lookups). You can verify this via logging in to the *az-dns-vm* VM and looking at the server properties in DNS Manager.
 
 ![image](images/11.PNG)
+
+- You will get a warning that the DNS server is not authoritative for this zone. This can be ignored
 
 This means that DNS requests from our *az-mgmt-vm* VM are being forwarded to our DNS Server (*az-dns-vm*), and then on to public Root Hints server(s) located on the public Internet. (You can see these server details within the Root Hunts tab if you are interested). Unfortunately, whilst this is great for enabling a Microsoft DNS Server to function with its default config, it also means that requests are not being sent to Azure DNS (via the special 168 address mentioned earlier), and therefore our use of Azure DNS Private Zones is failing.
 
