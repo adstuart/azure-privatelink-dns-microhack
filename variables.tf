@@ -1,7 +1,6 @@
 variable "location" {
-  description = "Location to deploy resources"
+  description = "Region to deploy resources"
   type        = string
-  default     = "WestEurope"
 }
 
 variable "username" {
