@@ -79,6 +79,8 @@ To start the terraform deployment, follow the steps listed below:
 
 `terraform apply`
 
+- Choose you region for deployment (location). E.g. eastus, westeurope, etc
+
 - Choose a suitable password to be used for your Virtual Machines administrator account (username: AzureAdmin)
 
 - Wait for the deployment to complete. This will take around 30 minutes (the VPN gateways take a while).
