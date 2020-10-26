@@ -117,7 +117,7 @@ The goal of this exercise is to deploy a simple Azure SQL Server and observe the
 
 ## Task 1 : Deploy an Azure SQL Server
 
-Within the MicroHack resource group (privatelink-dns-microhack-rg) deploy a simple Azure SQL Server in the West Europe. Example config shown below.
+Within the MicroHack resource group (privatelink-dns-microhack-rg) deploy a simple Azure SQL Server in the same resource group region. Please note, deploying Azure SQL Server in different region will impact outcome of challenge 2. Example config shown below.
 
 ![image](images/1.PNG)
 
