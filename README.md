@@ -58,7 +58,7 @@ In summary:
 
 ## Task 1 : Deploy Template
 
-We are going to use a predefined Terraform template to deploy the base environment. It will be deployed in to *your* Azure subscription, with resources running in the Azure West Europe region.
+We are going to use a predefined Terraform template to deploy the base environment. It will be deployed in to *your* Azure subscription, with resources running in the your specified Azure region.
 
 To start the terraform deployment, follow the steps listed below:
 
@@ -117,7 +117,7 @@ The goal of this exercise is to deploy a simple Azure SQL Server and observe the
 
 ## Task 1 : Deploy an Azure SQL Server
 
-Within the MicroHack resource group (privatelink-dns-microhack-rg) deploy a simple Azure SQL Server in the West Europe. Example config shown below.
+Within the MicroHack resource group (privatelink-dns-microhack-rg) deploy a simple Azure SQL Server in the same region as your Terraform deployment. Example config shown below.
 
 ![image](images/1.PNG)
 
