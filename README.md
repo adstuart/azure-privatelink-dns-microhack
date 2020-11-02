@@ -58,7 +58,7 @@ In summary:
 
 ## Task 1 : Deploy Template
 
-We are going to use a predefined Terraform template to deploy the base environment. It will be deployed in to *your* Azure subscription, with resources running in the Azure West Europe region.
+We are going to use a predefined Terraform template to deploy the base environment. It will be deployed in to *your* Azure subscription, with resources running in the your specified Azure region.
 
 To start the terraform deployment, follow the steps listed below:
 
