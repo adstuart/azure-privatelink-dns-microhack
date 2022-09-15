@@ -7,13 +7,6 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "=2.0.0"
-  features {}
-}
-
-#######################################################################
-## Create Resource Group
-#######################################################################
 
 resource "azurerm_resource_group" "privatelink-dns-microhack-rg" {
   name     = "privatelink-dns-microhack-rg"
@@ -24,4 +17,5 @@ resource "azurerm_resource_group" "privatelink-dns-microhack-rg" {
     deployment  = "terraform"
     microhack   = "privatelink-dns"
   }
+}
 }
