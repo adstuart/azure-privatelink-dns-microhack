@@ -14,7 +14,7 @@ resource "azurerm_virtual_network" "hub-vnet" {
   name                = "hub-vnet"
   location            = var.location
   resource_group_name = azurerm_resource_group.privatelink-dns-microhack-rg.name
-  address_space       = ["10.0.0.0/16"]
+  address_space       = ["10.82.66.0/24"]
 
   tags = {
     environment = "hub-spoke"
@@ -27,7 +27,7 @@ resource "azurerm_virtual_network" "spoke-vnet" {
   name                = "spoke-vnet"
   location            = var.location
   resource_group_name = azurerm_resource_group.privatelink-dns-microhack-rg.name
-  address_space       = ["10.1.0.0/16"]
+  address_space       = ["10.82.210.0/24"]
 
   tags = {
     environment = "spoke"
@@ -44,35 +44,35 @@ resource "azurerm_subnet" "hub-gateway-subnet" {
   name                 = "GatewaySubnet"
   resource_group_name  = azurerm_resource_group.privatelink-dns-microhack-rg.name
   virtual_network_name = azurerm_virtual_network.hub-vnet.name
-  address_prefix       = "10.0.255.224/27"
+  address_prefix       = "10.82.66.64/27"
 }
 
 resource "azurerm_subnet" "hub-bastion-subnet" {
   name                 = "AzureBastionSubnet"
   resource_group_name  = azurerm_resource_group.privatelink-dns-microhack-rg.name
   virtual_network_name = azurerm_virtual_network.hub-vnet.name
-  address_prefix       = "10.0.1.0/27"
+  address_prefix       = "10.82.66.96/27"
 }
 
 resource "azurerm_subnet" "hub-dns" {
   name                 = "DNSSubnet"
   resource_group_name  = azurerm_resource_group.privatelink-dns-microhack-rg.name
   virtual_network_name = azurerm_virtual_network.hub-vnet.name
-  address_prefix       = "10.0.0.0/24"
+  address_prefix       = "10.82.66.128/26"
 }
 
 resource "azurerm_subnet" "spoke-bastion-subnet" {
   name                 = "AzureBastionSubnet"
   resource_group_name  = azurerm_resource_group.privatelink-dns-microhack-rg.name
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
-  address_prefix       = "10.1.1.0/27"
+  address_prefix       = "10.82.210.64/27"
 }
 
 resource "azurerm_subnet" "spoke-infrastructure" {
   name                 = "InfrastructureSubnet"
   resource_group_name  = azurerm_resource_group.privatelink-dns-microhack-rg.name
   virtual_network_name = azurerm_virtual_network.spoke-vnet.name
-  address_prefix       = "10.1.0.0/24"
+  address_prefix       = "10.82.210.0/26"
 }
 
 #######################################################################
